@@ -1,0 +1,38 @@
+{
+  "name": "qup-vault-community-tester",
+  "version": "1.0.0",
+  "description": "Community testing suite for QUP Staking Vault on Solana Devnet",
+  "main": "vault_tester.js",
+  "scripts": {
+    "test": "node vault_tester.js test",
+    "status": "node vault_ster.js status",
+    "serve": "python3 -m http.server 8000 || python -m http.server 8000",
+    "start": "npm run serve"
+  },
+  "keywords": [
+    "solana",
+    "defi",
+    "staking",
+    "qup",
+    "testing",
+    "blockchain",
+    "web3"
+  ],
+  "author": "QUP Team",
+  "license": "MIT",
+  "dependencies": {
+    "@solana/web3.js": "^1.95.0",
+    "@solana/spl-token": "^0.4.8"
+  },
+  "engines": {
+    "node": ">=16.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/chris-drinqup/qupdevstaking.git"
+  },
+  "bugs": {
+    "url": "https://github.com/chris-drinqup/qupdevstaking/issues"
+  },
+  "homepage": "https://chris-drinqup.github.io/qupdevstaking"
+}

@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QUP Vault Tester - Community Testing</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .status-badge {
+            display: inline-block;
+            background: #4CAF50;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: bold;
+            margin: 10px 0;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.7; }
+            100% { opacity: 1; }
+        }
+
+        .main-content {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            overflow: hidden;
+        }
+
+        .nav-tabs {
+            display: flex;
+            background: #f8f9fa;
+            border-bottom: 2px solid #e9ecef;
+        }
+
+        .nav-tab {
+            flex: 1;
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            border: none;
+            background: none;
+        }
+
+        .nav-tab.active {
+            background: white;
+            color: #667eea;
+            border-bottom: 3px solid #667eea;
+        }
+
+        .nav-tab:hover {
+            background: #e9ecef;
+        }
+
+        .tab-content {
+            padding: 30px;
+            min-height: 400px;
+        }
+
+        .tab-pane {
+            display: none;
+        }
+
+        .tab-pane.active {
+            display: block;
+        }
+
+        .wallet-section {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            border-left: 4px solid #667eea;
+        }
+
+        .connect-btn {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 25px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        .connect-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+        }
+
+        .connect-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .balance-display {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .balance-card {
+            background: linear-gradient(45deg, #4CAF50, #45a049);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .balance-card h3 {
+            margin-bottom: 10px;
+            opacity: 0.9;
+        }
+
+        .balance-card .amount {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        .vault-info {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .vault-info h3 {
+            margin-bottom: 15px;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+        }
+
+        .info-item {
+            background: rgba(255,255,255,0.1);
+            padding: 10px;
+            border-radius: 5px;
+        }
+
+        .info-item strong {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .info-item span {
+            word-break: break-all;
+            font-size: 0.9rem;
+        }
+
+        .welcome-section {
+            text-align: center;
+            padding: 40px 20px;
+        }
+
+        .welcome-section h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+        }
+
+        .welcome-section p {
+            font-size: 1.1rem;
+            margin-bottom: 15px;
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .feature-card {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            border-left: 4px solid #667eea;
+        }
+
+        .feature-card h4 {
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        .cta-section {
+            background: linear-gradient(45deg, #ff9a56, #ffad56);
+            color: white;
+            padding: 30px;
+            border-radius: 10px;
+            text-align: center;
+            margin: 30px 0;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .nav-tabs {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚀 QUP Vault Tester</h1>
+            <div class="status-badge">✅ LIVE ON DEVNET</div>
+            <p>Community Testing Interface - Works with Any Solana Wallet!</p>
+        </div>
+
+        <div class="main-content">
+            <div class="nav-tabs">
+                <button class="nav-tab active" onclick="showTab('welcome')">Welcome</button>
+                <button class="nav-tab" onclick="showTab('connect')">Connect Wallet</button>
+                <button class="nav-tab" onclick="showTab('info')">Vault Info</button>
+                <button class="nav-tab" onclick="showTab('help')">Help</button>
+            </div>
+
+            <!-- Welcome Tab -->
+            <div id="welcome" class="tab-pane active">
+                <div class="tab-content">
+                    <div class="welcome-section">
+                        <h2>Welcome to QUP Vault Testing!</h2>
+                        <p>Help us test the future of Solana staking before mainnet launch.</p>
+                        <p><strong>No downloads required</strong> - just connect your Solana wallet and start testing!</p>
+                    </div>
+
+                    <div class="feature-grid">
+                        <div class="feature-card">
+                            <h4>🔒 Stake & Earn</h4>
+                            <p>Stake QUPDEV tokens and earn 1% daily rewards. Test the complete staking lifecycle.</p>
+                        </div>
+                        <div class="feature-card">
+                            <h4>📱 Universal Support</h4>
+                            <p>Works with Phantom, Solflare, Backpack, and other Solana wallets. Mobile friendly!</p>
+                        </div>
+                        <div class="feature-card">
+                            <h4>🎁 Earn Rewards</h4>
+                            <p>Get real QUP tokens for mainnet by helping us test. Up to 500 QUP for active testers!</p>
+                        </div>
+                        <div class="feature-card">
+                            <h4>🛡️ Safe Testing</h4>
+                            <p>All testing on Solana devnet. No real money at risk. Test tokens provided free.</p>
+                        </div>
+                    </div>
+
+                    <div class="cta-section">
+                        <h3>Ready to Start Testing?</h3>
+                        <p>Connect your wallet and request test tokens to begin!</p>
+                        <button class="connect-btn" onclick="showTab('connect')" style="margin: 15px 0;">
+                            Get Started →
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Connect Tab -->
+            <div id="connect" class="tab-pane">
+                <div class="tab-content">
+                    <div class="wallet-section">
+                        <h3>Step 1: Connect Your Solana Wallet</h3>
+                        <p>This works with Phantom, Solflare, Backpack, and other Solana wallets!</p>
+                        <br>
+                        <button id="connectBtn" class="connect-btn" onclick="connectWallet()">
+                            Connect Wallet
+                        </button>
+                        <div id="walletStatus" style="margin-top: 15px;"></div>
+                    </div>
+
+                    <div id="balanceSection" style="display: none;">
+                        <h3>Your Balances</h3>
+                        <div class="balance-display">
+                            <div class="balance-card">
+                                <h3>SOL Balance</h3>
+                                <div class="amount" id="solBalance">Loading...</div>
+                            </div>
+                            <div class="balance-card">
+                                <h3>QUPDEV Tokens</h3>
+                                <div class="amount" id="qupdevBalance">Loading...</div>
+                            </div>
+                        </div>
+                        
+                        <div id="needTokens" style="background: #fff3cd; padding: 20px; border-radius: 10px; margin-top: 20px;">
+                            <h4>🎯 Need Test Tokens?</h4>
+                            <p>Join our Discord/Telegram and share your wallet address:</p>
+                            <p><strong>Your Address:</strong> <span id="userAddress"></span></p>
+                            <button class="connect-btn" onclick="copyAddress()" style="margin: 10px 0; font-size: 0.9rem; padding: 8px 16px;">📋 Copy Address</button>
+                            <p>We'll send you 1000 QUPDEV tokens + devnet SOL for testing!</p>
+                            <p><strong>Discord:</strong> #qup-vault-testing | <strong>Telegram:</strong> @qup-community</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Info Tab -->
+            <div id="info" class="tab-pane">
+                <div class="tab-content">
+                    <div class="vault-info">
+                        <h3>📊 Live Vault Information</h3>
+                        <div class="info-grid">
+                            <div class="info-item">
+                                <strong>Vault Address:</strong>
+                                <span>FGCLTzWpKHmPLcak8HcqP7j7wz7jjLTWzZ1SwKNFfzuz</span>
+                            </div>
+                            <div class="info-item">
+                                <strong>Program ID:</strong>
+                                <span>69GqjmqyXcL593ByVF4YqrFzBxHX5DsVcSRsAk49pPq7</span>
+                            </div>
+                            <div class="info-item">
+                                <strong>Reward Rate:</strong>
+                                <span>1% Daily (100 basis points)</span>
+                            </div>
+                            <div class="info-item">
+                                <strong>Network:</strong>
+                                <span>Solana Devnet</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="feature-card" style="margin: 20px 0;">
+                        <h4>🔗 Explore on Solana</h4>
+                        <p>View the live vault and transactions on Solana Explorer:</p>
+                        <div style="margin: 15px 0;">
+                            <button class="connect-btn" onclick="openExplorer('vault')" style="margin: 5px; font-size: 0.9rem; padding: 8px 16px;">
+                                View Vault
+                            </button>
+                            <button class="connect-btn" onclick="openExplorer('program')" style="margin: 5px; font-size: 0.9rem; padding: 8px 16px;">
+                                View Program
+                            </button>
+                            <button class="connect-btn" onclick="openExplorer('init')" style="margin: 5px; font-size: 0.9rem; padding: 8px 16px; background: #4CAF50;">
+                                Initialization Tx
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="feature-card">
+                        <h4>💻 For Technical Users</h4>
+                        <p>Prefer command line? Check out our GitHub repository with full CLI tools:</p>
+                        <button class="connect-btn" onclick="window.open('https://github.com/chris-drinqup/qupdevstaking', '_blank')" style="margin: 10px 0; font-size: 0.9rem; padding: 8px 16px;">
+                            View on GitHub
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Help Tab -->
+            <div id="help" class="tab-pane">
+                <div class="tab-content">
+                    <h3>❓ Help & Support</h3>
+                    
+                    <div class="feature-card" style="margin: 20px 0;">
+                        <h4>🚀 Quick Start Guide</h4>
+                        <p><strong>1. Get a Wallet:</strong> Download Phantom, Solflare, or Backpack</p>
+                        <p><strong>2. Switch to Devnet:</strong> Change network to "Devnet" in wallet settings</p>
+                        <p><strong>3. Connect Here:</strong> Click "Connect Wallet" tab</p>
+                        <p><strong>4. Get Test Tokens:</strong> Share your address in Discord/Telegram</p>
+                        <p><strong>5. Start Testing:</strong> Full testing interface coming soon!</p>
+                    </div>
+
+                    <div class="feature-card" style="margin: 20px 0;">
+                        <h4>🆘 Common Issues</h4>
+                        <p><strong>Wallet not detected:</strong> Install a Solana wallet browser extension</p>
+                        <p><strong>Wrong network:</strong> Switch to "Devnet" in wallet settings</p>
+                        <p><strong>No test tokens:</strong> Request in Discord/Telegram with your address</p>
+                        <p><strong>Transaction failed:</strong> Make sure you have devnet SOL for fees</p>
+                    </div>
+
+                    <div class="cta-section">
+                        <h4>📞 Get Support</h4>
+                        <p><strong>Discord:</strong> #qup-vault-testing</p>
+                        <p><strong>Telegram:</strong> @qup-community</p>
+                        <p><strong>GitHub:</strong> Create an issue for bugs</p>
+                        <p><strong>Response Time:</strong> Usually &lt; 30 minutes</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Include Solana Web3.js -->
+    <script src="https://unpkg.com/@solana/web3.js@latest/lib/index.iife.min.js"></script>
+
+    <script>
+        let wallet = null;
+        let connection = null;
+
+        // Initialize connection
+        connection = new solanaWeb3.Connection('https://api.devnet.solana.com', 'confirmed');
+
+        // Tab navigation
+        function showTab(tabName) {
+            document.querySelectorAll('.tab-pane').forEach(pane => {
+                pane.classList.remove('active');
+            });
+            
+            document.querySelectorAll('.nav-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            document.getElementById(tabName).classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        // Wallet connection
+        async function connectWallet() {
+            const connectBtn = document.getElementById('connectBtn');
+            const walletStatus = document.getElementById('walletStatus');
+            
+            try {
+                connectBtn.disabled = true;
+                connectBtn.innerHTML = '⏳ Connecting...';
+                
+                // Check for various wallet providers
+                let provider = null;
+                if (window.solana && window.solana.isPhantom) {
+                    provider = window.solana;
+                } else if (window.solflare && window.solflare.isSolflare) {
+                    provider = window.solflare;
+                } else if (window.backpack) {
+                    provider = window.backpack;
+                } else if (window.solana) {
+                    provider = window.solana;
+                } else {
+                    throw new Error('No Solana wallet detected. Please install Phantom, Solflare, or Backpack.');
+                }
+
+                // Request connection
+                const response = await provider.connect();
+                wallet = response.publicKey;
+                
+                // Update UI
+                connectBtn.innerHTML = '✅ Connected';
+                connectBtn.style.background = '#4CAF50';
+                walletStatus.innerHTML = `
+                    <div style="color: #4CAF50; font-weight: bold;">
+                        ✅ Connected: ${wallet.toString().slice(0, 8)}...${wallet.toString().slice(-8)}
+                    </div>
+                `;
+                
+                document.getElementById('userAddress').textContent = wallet.toString();
+                document.getElementById('balanceSection').style.display = 'block';
+                
+                // Load balances
+                await loadBalances();
+                
+            } catch (error) {
+                connectBtn.disabled = false;
+                connectBtn.innerHTML = 'Connect Wallet';
+                walletStatus.innerHTML = `<div style="color: #f56565;">❌ ${error.message}</div>`;
+            }
+        }
+
+        // Load wallet balances
+        async function loadBalances() {
+            try {
+                // Get SOL balance
+                const solBalance = await connection.getBalance(wallet);
+                const solBalanceFormatted = (solBalance / solanaWeb3.LAMPORTS_PER_SOL).toFixed(3);
+                document.getElementById('solBalance').textContent = `${solBalanceFormatted} SOL`;
+                
+                // For now, show 0 QUPDEV - full implementation coming soon
+                document.getElementById('qupdevBalance').textContent = '0 QUPDEV';
+                
+            } catch (error) {
+                document.getElementById('solBalance').textContent = 'Error';
+                document.getElementById('qupdevBalance').textContent = 'Error';
+            }
+        }
+
+        // Utility functions
+        function copyAddress() {
+            if (wallet) {
+                navigator.clipboard.writeText(wallet.toString());
+                alert('Wallet address copied to clipboard!');
+            }
+        }
+
+        function openExplorer(type) {
+            const baseUrl = 'https://explorer.solana.com';
+            let url;
+            
+            switch (type) {
+                case 'vault':
+                    url = `${baseUrl}/address/FGCLTzWpKHmPLcak8HcqP7j7wz7jjLTWzZ1SwKNFfzuz?cluster=devnet`;
+                    break;
+                case 'program':
+                    url = `${baseUrl}/address/69GqjmqyXcL593ByVF4YqrFzBxHX5DsVcSRsAk49pPq7?cluster=devnet`;
+                    break;
+                case 'init':
+                    url = `${baseUrl}/tx/37RZR3gooFLt2nSJVtZX5js4e6xb5hUEeWHkDZKgL1LSUuqxeuptBkrwpVoRTmeqjoy3qUeoxUPqZqyndQsXAyg7?cluster=devnet`;
+                    break;
+            }
+            
+            window.open(url, '_blank');
+        }
+
+        // Initialize the interface
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('QUP Vault Tester loaded successfully');
+            
+            // Test connection
+            connection.getVersion().then(version => {
+                console.log(`Connected to Solana devnet`);
+            }).catch(error => {
+                console.error(`Failed to connect to devnet: ${error.message}`);
+            });
+        });
+    </script>
+</body>
+</html>
