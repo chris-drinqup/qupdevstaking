@@ -526,14 +526,38 @@
                 // Get SOL balance
                 const solBalance = await connection.getBalance(wallet);
                 const solBalanceFormatted = (solBalance / solanaWeb3.LAMPORTS_PER_SOL).toFixed(3);
-                document.getElementById('solBalance').textContent = `${solBalanceFormatted} SOL`;
-                
-                // For now, show 0 QUPDEV - full implementation coming soon
-                document.getElementById('qupdevBalance').textContent = '0 QUPDEV';
-                
+                document.getElementById("solBalance").textContent = `${solBalanceFormatted} SOL`;
+
+                // Get QUPDEV token balance with proper recognition
+                try {
+                    const qupdevMint = new solanaWeb3.PublicKey("8bjKA2mkXMdkUHC6m8TfyQcksTDLKeP61XmFFcVViYef");
+                    const tokenAccounts = await connection.getTokenAccountsByOwner(wallet, {
+                        mint: qupdevMint
+                    });
+
+                    if (tokenAccounts.value.length > 0) {
+                        const tokenBalance = await connection.getTokenAccountBalance(tokenAccounts.value[0].pubkey);
+                        const qupdevBalance = tokenBalance.value.uiAmount || 0;
+                        
+                        // Use token registry to display properly
+                        const tokenInfo = getTokenInfo(qupdevMint.toString());
+                        document.getElementById("qupdevBalance").textContent = `${qupdevBalance} ${tokenInfo.symbol}`;
+
+                        console.log(`Found ${qupdevBalance} ${tokenInfo.symbol} tokens`);
+                    } else {
+                        const tokenInfo = getTokenInfo("8bjKA2mkXMdkUHC6m8TfyQcksTDLKeP61XmFFcVViYef");
+                        document.getElementById("qupdevBalance").textContent = `0 ${tokenInfo.symbol}`;
+                        console.log(`No ${tokenInfo.symbol} token account found`);
+                    }
+                } catch (tokenError) {
+                    const tokenInfo = getTokenInfo("8bjKA2mkXMdkUHC6m8TfyQcksTDLKeP61XmFFcVViYef");
+                    document.getElementById("qupdevBalance").textContent = `0 ${tokenInfo.symbol}`;
+                    console.log(`Error loading ${tokenInfo.symbol} tokens:`, tokenError);
+                }
             } catch (error) {
-                document.getElementById('solBalance').textContent = 'Error';
-                document.getElementById('qupdevBalance').textContent = 'Error';
+                console.error("Failed to load balances:", error);
+                document.getElementById("solBalance").textContent = "Error";
+                document.getElementById("qupdevBalance").textContent = "Error";
             }
         }
 
