@@ -431,6 +431,26 @@
     <script src="https://unpkg.com/@solana/web3.js@latest/lib/index.iife.min.js"></script>
 
     <script>
+
+        // TOKEN REGISTRY - Makes QUPDEV tokens show up properly instead of "unknown"
+        const TOKEN_REGISTRY = {
+            "8bjKA2mkXMdkUHC6m8TfyQcksTDLKeP61XmFFcVViYef": {
+                symbol: "QUPDEV",
+                name: "QUP Development Token",
+                decimals: 9,
+                logoURI: "https://drinqup.com/qupdev-logo.png",
+                network: "devnet"
+            }
+        };
+
+        function getTokenInfo(mintAddress) {
+            return TOKEN_REGISTRY[mintAddress] || {
+                symbol: "UNKNOWN",
+                name: "Unknown Token",
+                decimals: 9
+            };
+        }
+
         let wallet = null;
         let connection = null;
 
