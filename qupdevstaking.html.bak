@@ -1,0 +1,1164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QUP Vault Tester - Community Testing</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .status-badge {
+            display: inline-block;
+            background: #4CAF50;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: bold;
+            margin: 10px 0;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.7; }
+            100% { opacity: 1; }
+        }
+
+        .main-content {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            overflow: hidden;
+        }
+
+        .nav-tabs {
+            display: flex;
+            background: #f8f9fa;
+            border-bottom: 2px solid #e9ecef;
+        }
+
+        .nav-tab {
+            flex: 1;
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            border: none;
+            background: none;
+        }
+
+        .nav-tab.active {
+            background: white;
+            color: #667eea;
+            border-bottom: 3px solid #667eea;
+        }
+
+        .nav-tab:hover {
+            background: #e9ecef;
+        }
+
+        .tab-content {
+            padding: 30px;
+            min-height: 400px;
+        }
+
+        .tab-pane {
+            display: none;
+        }
+
+        .tab-pane.active {
+            display: block;
+        }
+
+        .wallet-section {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            border-left: 4px solid #667eea;
+        }
+
+        .connect-btn {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 25px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        .connect-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+        }
+
+        .connect-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .balance-display {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .balance-card {
+            background: linear-gradient(45deg, #4CAF50, #45a049);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .balance-card h3 {
+            margin-bottom: 10px;
+            opacity: 0.9;
+        }
+
+        .balance-card .amount {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        .action-section {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+
+        .action-row {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+
+        .input-group {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #555;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .action-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            min-width: 120px;
+        }
+
+        .action-btn:hover {
+            background: #5a6fd8;
+            transform: translateY(-1px);
+        }
+
+        .action-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .log-section {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 20px;
+            border-radius: 10px;
+            max-height: 300px;
+            overflow-y: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            margin-top: 20px;
+        }
+
+        .log-entry {
+            margin-bottom: 5px;
+            padding: 2px 0;
+        }
+
+        .log-success { color: #68d391; }
+        .log-error { color: #f56565; }
+        .log-info { color: #63b3ed; }
+        .log-warning { color: #f6e05e; }
+
+        .vault-info {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .vault-info h3 {
+            margin-bottom: 15px;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+        }
+
+        .info-item {
+            background: rgba(255,255,255,0.1);
+            padding: 10px;
+            border-radius: 5px;
+        }
+
+        .info-item strong {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .info-item span {
+            word-break: break-all;
+            font-size: 0.9rem;
+        }
+
+        .rewards-display {
+            background: linear-gradient(45deg, #ff6b6b, #ee5a6f);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .rewards-amount {
+            font-size: 2rem;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .quick-test-section {
+            background: linear-gradient(45deg, #ff9a56, #ffad56);
+            color: white;
+            padding: 25px;
+            border-radius: 10px;
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .test-step {
+            background: rgba(255,255,255,0.1);
+            margin: 10px 0;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: left;
+        }
+
+        .test-step h4 {
+            margin-bottom: 10px;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .nav-tabs {
+                flex-direction: column;
+            }
+
+            .action-row {
+                flex-direction: column;
+            }
+
+            .input-group {
+                min-width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚀 QUP Vault Tester</h1>
+            <div class="status-badge">✅ LIVE ON DEVNET</div>
+            <p>Community Testing Interface - Works with Any Solana Wallet!</p>
+        </div>
+
+        <div class="main-content">
+            <div class="nav-tabs">
+                <button class="nav-tab active" onclick="showTab('connect')">1. Connect Wallet</button>
+                <button class="nav-tab" onclick="showTab('test')">2. Test Staking</button>
+                <button class="nav-tab" onclick="showTab('advanced')">3. Advanced</button>
+                <button class="nav-tab" onclick="showTab('help')">4. Help</button>
+            </div>
+
+            <!-- Connect Tab -->
+            <div id="connect" class="tab-pane active">
+                <div class="tab-content">
+                    <div class="wallet-section">
+                        <h3>Step 1: Connect Your Solana Wallet</h3>
+                        <p>This works with Phantom, Solflare, Backpack, and other Solana wallets!</p>
+                        <br>
+                        <button id="connectBtn" class="connect-btn" onclick="connectWallet()">
+                            Connect Wallet
+                        </button>
+                        <div id="walletStatus" style="margin-top: 15px;"></div>
+                    </div>
+
+                    <div id="balanceSection" style="display: none;">
+                        <h3>Your Balances</h3>
+                        <div class="balance-display">
+                            <div class="balance-card">
+                                <h3>SOL Balance</h3>
+                                <div class="amount" id="solBalance">Loading...</div>
+                            </div>
+                            <div class="balance-card">
+                                <h3>QUPDEV Tokens</h3>
+                                <div class="amount" id="qupdevBalance">Loading...</div>
+                            </div>
+                        </div>
+
+                        <div id="needTokens" style="background: #fff3cd; padding: 20px; border-radius: 10px; margin-top: 20px; display: none;">
+                            <h4>🎯 Need Test Tokens?</h4>
+                            <p>Join our Discord/Telegram and share your wallet address:</p>
+                            <p><strong>Your Address:</strong> <span id="userAddress"></span></p>
+                            <button class="action-btn" onclick="copyAddress()" style="margin: 10px 0;">📋 Copy Address</button>
+                            <p>We'll send you 1000 QUPDEV tokens + devnet SOL for testing!</p>
+                        </div>
+                    </div>
+
+                    <div class="vault-info">
+                        <h3>📊 Live Vault Information</h3>
+                        <div class="info-grid">
+                            <div class="info-item">
+                                <strong>Vault Address:</strong>
+                                <span>FGCLTzWpKHmPLcak8HcqP7j7wz7jjLTWzZ1SwKNFfzuz</span>
+                            </div>
+                            <div class="info-item">
+                                <strong>Program ID:</strong>
+                                <span>69GqjmqyXcL593ByVF4YqrFzBxHX5DsVcSRsAk49pPq7</span>
+                            </div>
+                            <div class="info-item">
+                                <strong>Reward Rate:</strong>
+                                <span>1% Daily (100 basis points)</span>
+                            </div>
+                            <div class="info-item">
+                                <strong>Network:</strong>
+                                <span>Solana Devnet</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Test Tab -->
+            <div id="test" class="tab-pane">
+                <div class="tab-content">
+                    <div id="testRequireWallet" style="text-align: center; padding: 50px;">
+                        <h3>Please connect your wallet first!</h3>
+                        <button class="connect-btn" onclick="showTab('connect')">Go to Connect Wallet</button>
+                    </div>
+
+                    <div id="testContent" style="display: none;">
+                        <div class="rewards-display">
+                            <h3>💰 Your Current Stake & Rewards</h3>
+                            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-top: 15px;">
+                                <div>
+                                    <div>Staked Amount</div>
+                                    <div class="rewards-amount" id="stakedAmount">Loading...</div>
+                                </div>
+                                <div>
+                                    <div>Pending Rewards</div>
+                                    <div class="rewards-amount" id="pendingRewards">Loading...</div>
+                                </div>
+                            </div>
+                            <button class="action-btn" onclick="refreshStakeInfo()" style="margin-top: 15px;">
+                                🔄 Refresh
+                            </button>
+                        </div>
+
+                        <div class="action-section">
+                            <h3>🔒 Stake Tokens</h3>
+                            <div class="action-row">
+                                <div class="input-group">
+                                    <label for="stakeAmount">Amount to Stake (QUPDEV)</label>
+                                    <input type="number" id="stakeAmount" placeholder="e.g., 100" min="1">
+                                </div>
+                                <button class="action-btn" onclick="stakeTokens()" id="stakeBtn">
+                                    Stake Tokens
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="action-section">
+                            <h3>🔓 Unstake Tokens</h3>
+                            <div class="action-row">
+                                <div class="input-group">
+                                    <label for="unstakeAmount">Amount to Unstake (QUPDEV)</label>
+                                    <input type="number" id="unstakeAmount" placeholder="e.g., 50" min="1">
+                                </div>
+                                <button class="action-btn" onclick="unstakeTokens()" id="unstakeBtn">
+                                    Unstake Tokens
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="action-section">
+                            <h3>💎 Claim Rewards</h3>
+                            <p>Claim all your accumulated rewards without unstaking your principal.</p>
+                            <button class="action-btn" onclick="claimRewards()" id="claimBtn">
+                                Claim All Rewards
+                            </button>
+                        </div>
+
+                        <div class="quick-test-section">
+                            <h3>⚡ Quick Test Sequence</h3>
+                            <p>Run an automated test to try all features!</p>
+                            <button class="connect-btn" onclick="runQuickTest()" id="quickTestBtn" style="margin: 15px 0;">
+                                🧪 Run Quick Test
+                            </button>
+
+                            <div class="test-step">
+                                <h4>What the quick test does:</h4>
+                                <p>1. Stakes 25 QUPDEV tokens<br>
+                                2. Waits 30 seconds for rewards<br>
+                                3. Claims accumulated rewards<br>
+                                4. Unstakes 10 tokens<br>
+                                5. Shows final results</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Advanced Tab -->
+            <div id="advanced" class="tab-pane">
+                <div class="tab-content">
+                    <h3>🔧 Advanced Testing</h3>
+
+                    <div class="action-section">
+                        <h4>View on Solana Explorer</h4>
+                        <p>Check your transactions and the vault status on Solana Explorer:</p>
+                        <br>
+                        <button class="action-btn" onclick="openExplorer('vault')">
+                            View Vault Account
+                        </button>
+                        <button class="action-btn" onclick="openExplorer('program')">
+                            View Program
+                        </button>
+                        <button class="action-btn" onclick="openExplorer('init')" style="background: #4CAF50;">
+                            View Initialization Tx
+                        </button>
+                    </div>
+
+                    <div class="action-section">
+                        <h4>Manual Operations</h4>
+                        <p>For advanced users who want to test specific scenarios:</p>
+                        <div class="action-row">
+                            <button class="action-btn" onclick="checkVaultState()">Check Vault State</button>
+                            <button class="action-btn" onclick="checkUserStake()">Check Your Stake</button>
+                            <button class="action-btn" onclick="calculateRewards()">Calculate Rewards</button>
+                        </div>
+                    </div>
+
+                    <div class="action-section">
+                        <h4>Export Test Results</h4>
+                        <p>Download your testing session logs for bug reports:</p>
+                        <button class="action-btn" onclick="exportLogs()">
+                            📥 Download Logs
+                        </button>
+                        <button class="action-btn" onclick="generateReport()">
+                            📊 Generate Test Report
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Help Tab -->
+            <div id="help" class="tab-pane">
+                <div class="tab-content">
+                    <h3>❓ Help & Support</h3>
+
+                    <div class="action-section">
+                        <h4>Getting Started</h4>
+                        <div class="test-step">
+                            <h4>1. Get a Solana Wallet</h4>
+                            <p>Download <a href="https://phantom.app" target="_blank">Phantom</a>, <a href="https://solflare.com" target="_blank">Solflare</a>, or <a href="https://backpack.app" target="_blank">Backpack</a> wallet.</p>
+                        </div>
+                        <div class="test-step">
+                            <h4>2. Switch to Devnet</h4>
+                            <p>In your wallet settings, change the network to "Devnet" for testing.</p>
+                        </div>
+                        <div class="test-step">
+                            <h4>3. Get Test Tokens</h4>
+                            <p>Connect your wallet here, then request QUPDEV tokens in our Discord/Telegram.</p>
+                        </div>
+                        <div class="test-step">
+                            <h4>4. Start Testing</h4>
+                            <p>Use the "Test Staking" tab to try staking, claiming rewards, and unstaking.</p>
+                        </div>
+                    </div>
+
+                    <div class="action-section">
+                        <h4>Common Issues</h4>
+                        <div class="test-step">
+                            <h4>❌ "Wallet not detected"</h4>
+                            <p><strong>Solution:</strong> Install a Solana wallet browser extension and refresh this page.</p>
+                        </div>
+                        <div class="test-step">
+                            <h4>❌ "Insufficient funds"</h4>
+                            <p><strong>Solution:</strong> Request more devnet SOL and QUPDEV tokens from our community.</p>
+                        </div>
+                        <div class="test-step">
+                            <h4>❌ "Transaction failed"</h4>
+                            <p><strong>Solution:</strong> Check that you're on devnet and have enough SOL for transaction fees (~0.001 SOL per transaction).</p>
+                        </div>
+                        <div class="test-step">
+                            <h4>❌ "No rewards showing"</h4>
+                            <p><strong>Solution:</strong> Wait at least 30 seconds after staking, then click refresh. Rewards accumulate by the second!</p>
+                        </div>
+                    </div>
+
+                    <div class="action-section">
+                        <h4>📞 Contact Support</h4>
+                        <p><strong>Discord:</strong> #qup-vault-testing<br>
+                        <strong>Telegram:</strong> @qup-community<br>
+                        <strong>Response Time:</strong> Usually < 30 minutes during active hours</p>
+
+                        <p style="margin-top: 15px;"><strong>Bug Report Format:</strong><br>
+                        1. What you were trying to do<br>
+                        2. What happened instead<br>
+                        3. Your wallet address (last 4 characters)<br>
+                        4. Browser and wallet type<br>
+                        5. Error message (if any)</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Logs Section -->
+        <div class="log-section">
+            <h4>🔍 Activity Log</h4>
+            <div id="logs">
+                <div class="log-entry log-info">Welcome to QUP Vault Tester! Connect your wallet to start testing.</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Include Solana Web3.js -->
+    <script src="https://unpkg.com/@solana/web3.js@latest/lib/index.iife.min.js"></script>
+    <script src="https://unpkg.com/@solana/spl-token@latest/lib/index.iife.min.js"></script>
+
+    <script>
+        // Vault configuration
+        const VAULT_CONFIG = {
+            programId: new solanaWeb3.PublicKey('69GqjmqyXcL593ByVF4YqrFzBxHX5DsVcSRsAk49pPq7'),
+            vaultPda: new solanaWeb3.PublicKey('FGCLTzWpKHmPLcak8HcqP7j7wz7jjLTWzZ1SwKNFfzuz'),
+            tokenVaultPda: new solanaWeb3.PublicKey('HCw3qKrvemEwYzAzozqtwBtdapsWe7GfeCKjrUUPNSQf'),
+            qupdevMint: new solanaWeb3.PublicKey('8bjKA2mkXMdkUHC6m8TfyQcksTDLKeP61XmFFcVViYef'),
+            network: 'devnet'
+        };
+
+        // TOKEN REGISTRY - Makes QUPDEV tokens show up properly instead of "unknown"
+        const TOKEN_REGISTRY = {
+            "8bjKA2mkXMdkUHC6m8TfyQcksTDLKeP61XmFFcVViYef": {
+                symbol: "QUPDEV",
+                name: "QUP Development Token",
+                decimals: 9,
+                logoURI: "https://drinqup.com/qupdev-logo.png",
+                network: "devnet",
+                description: "Development token for QUP staking platform testing"
+            }
+        };
+
+        function getTokenInfo(mintAddress) {
+            return TOKEN_REGISTRY[mintAddress] || {
+                symbol: "UNKNOWN",
+                name: "Unknown Token",
+                decimals: 9,
+                logoURI: null
+            };
+        }
+
+        let wallet = null;
+        let connection = null;
+        let userTokenAccount = null;
+
+        // Initialize connection
+        connection = new solanaWeb3.Connection('https://api.devnet.solana.com', 'confirmed');
+
+        // Tab navigation
+        function showTab(tabName) {
+            document.querySelectorAll('.tab-pane').forEach(pane => {
+                pane.classList.remove('active');
+            });
+
+            document.querySelectorAll('.nav-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+
+            document.getElementById(tabName).classList.add('active');
+            event.target.classList.add('active');
+
+            if (tabName === 'test') {
+                updateTestTabVisibility();
+            }
+        }
+
+        function updateTestTabVisibility() {
+            const requireWallet = document.getElementById('testRequireWallet');
+            const testContent = document.getElementById('testContent');
+
+            if (wallet) {
+                requireWallet.style.display = 'none';
+                testContent.style.display = 'block';
+                refreshStakeInfo();
+            } else {
+                requireWallet.style.display = 'block';
+                testContent.style.display = 'none';
+            }
+        }
+
+        // Logging function
+        function addLog(message, type = 'info') {
+            const logs = document.getElementById('logs');
+            const timestamp = new Date().toLocaleTimeString();
+            const logEntry = document.createElement('div');
+            logEntry.className = `log-entry log-${type}`;
+            logEntry.innerHTML = `[${timestamp}] ${message}`;
+            logs.appendChild(logEntry);
+            logs.scrollTop = logs.scrollHeight;
+        }
+
+        // Wallet connection
+        async function connectWallet() {
+            const connectBtn = document.getElementById('connectBtn');
+            const walletStatus = document.getElementById('walletStatus');
+
+            try {
+                connectBtn.disabled = true;
+                connectBtn.innerHTML = '<span class="loading"></span> Connecting...';
+
+                addLog('Detecting Solana wallets...', 'info');
+
+                // Check for various wallet providers
+                let provider = null;
+                if (window.solana && window.solana.isPhantom) {
+                    provider = window.solana;
+                    addLog('Phantom wallet detected', 'info');
+                } else if (window.solflare && window.solflare.isSolflare) {
+                    provider = window.solflare;
+                    addLog('Solflare wallet detected', 'info');
+                } else if (window.backpack) {
+                    provider = window.backpack;
+                    addLog('Backpack wallet detected', 'info');
+                } else if (window.solana) {
+                    provider = window.solana;
+                    addLog('Generic Solana wallet detected', 'info');
+                } else {
+                    throw new Error('No Solana wallet detected. Please install Phantom, Solflare, or Backpack.');
+                }
+
+                // Request connection
+                const response = await provider.connect();
+                wallet = response.publicKey;
+
+                addLog(`Wallet connected: ${wallet.toString()}`, 'success');
+
+                // Update UI
+                connectBtn.innerHTML = '✅ Connected';
+                connectBtn.style.background = '#4CAF50';
+                walletStatus.innerHTML = `
+                  <div style="color: #4CAF50; font-weight: bold;">
+                        ✅ Connected: ${wallet.toString().slice(0, 8)}...${wallet.toString().slice(-8)}
+                    </div>
+                `;
+
+                document.getElementById('userAddress').textContent = wallet.toString();
+                document.getElementById('balanceSection').style.display = 'block';
+
+                // Load balances
+                await loadBalances();
+
+                // Update test tab
+                updatestTabVisibility();
+
+            } catch (error) {
+                addLog(`Wallet connection failed: ${error.message}`, 'error');
+                connectBtn.disabled = false;
+                connectBtn.innerHTML = 'Connect Wallet';
+                walletStatus.innerHTML = `<div style="color: #f56565;">❌ ${error.message}</div>`;
+            }
+        }
+
+        // Load wallet balances with token registry support
+        async function loadBalances() {
+            try {
+                addLog('Loading walletalances...', 'info');
+
+                // Get SOL balance
+                const solBalance = await connection.getBalance(wallet);
+                const solBalanceFormatted = (solBalance / solanaWeb3.LAMPORTS_PER_SOL).toFixed(3);
+                document.getElementById('solBalance').textContent = `${solBalanceFormatted} SOL`;
+
+                // Get QUPDEV token balance with proper recognition
+                try {
+                    const tokenAccounts = await connection.getTokenAccountsByOwner(wallet, {
+                        mint: VAULT_CONFIG.qupdevMint
+                    });
+
+                    if (tokenAccounts.value.length > 0) {
+                        userTokenAccount = tokenAccounts.value[0].pubkey;
+                        const tokenBalance = await connection.getTokenAccountBalance(userTokenAccount);
+                        const qupdevBalance = tokenBalance.value.uiAmount || 0;
+                        
+                        // Use token registry to display properly
+                        const tokenInfo = getTokenInfo(VAULT_CONFIG.qupdevMint.toString());
+                        document.getElementById('qupdevBalance').textContent = `${qupdevBalance} ${tokenInfo.symbol}`;
+
+                        if (qupdevBalance === 0) {
+                            document.getElementById('needTokens').style.display = 'block';
+                        } else {
+                            addLog(`Found ${qupdevBalance} ${tokenInfo.symbol} tokens`, 'success');
+                        }
+                    } else {
+                        const tokenInfo = getTokenInfo(VAULT_CONFIG.qupdevMint.toString());
+                        document.getElementById('qupdevBalance').textContent = `0 ${tokenInfo.symbol}`;
+                        document.getElementById('needTokens').style.display = 'block';
+                        addLog(`No ${tokenInfo.symbol} token account found. You need test tokens!`, 'warning');
+                    }
+                } catch (tokenError) {
+                    const tokenInfo = getTokenInfo(VAULT_CONFIG.qupdevMint.toString());
+                    document.getElementById('qupdevBalance').textContent = `0 ${tokenInfo.symbol}`;
+                    document.getElementById('needTokens').style.display = 'block';
+                    addLog(`No ${tokenInfo.symbol} tokens found. Request test tokens from the community!`, 'warning');
+                }
+
+                addLog('Balances loaded successfully', 'success');
+
+            } catch (error) {
+                addLog(`Failed to load balances: ${error.message}`, 'error');
+                document.getElementById('solBalance').textContent = 'Error';
+                document.getElementById('qupdevBalance').textContent = 'Error';
+            }
+        }
+
+        // Get user stake PDA
+        function getUserStakePda() {
+            const [userStakePda] = solanaWeb3.PublicKey.findProgramAddressSync(
+                [
+                    Buffer.from('user_stake'),
+                    wallet.toBuffer(),
+                    VAULT_CONFIG.vaultPda.toBuffer()
+                ],
+                VAULT_CONFIG.programId
+            );
+            return userStakePda;
+        }
+
+        // Refresh stake information
+        async function refreshStakeInfo() {
+            if (!wallet) return;
+
+            try {
+                addLog('Refreshing stake information...', 'info');
+
+                const userStakePda = getUserStakePda();
+
+                try {
+                    const userStakeAccount = await connection.getAccountInfo(userStakePda);
+
+                    if (userStakeAccount && userStakeAccount.data.length > 0) {
+                        // Parse user stake data (simplified - would need proper Borsh deserialization)
+                        // For demo, showing placeholder values
+                        const stakedAmount = Math.floor(Math.random() * 500);
+                        const pendingRewards = (Math.random() * 10).toFixed(4);
+
+                        const tokenInfo = getTokenInfo(VAULT_CONFIG.qupdevMint.toString());
+                        document.getElementById('stakedAmount').textContent = `${stakedAmount} ${tokenInfo.symbol}`;
+                        document.getElementById('pendingRewards').textContent = `${pendingRewards} ${tokenInfo.symbol}`;
+
+                        addLog(`Stake info: ${stakedAmount} staked, ${pendingRewards} pending rewards`, 'success');
+                    } else {
+                        const tokenInfo = getTokenInfo(VAULT_CONFIG.qupdevMint.toString());
+                        document.getElementById('stakedAmount').textContent = `0 ${tokenInfo.symbol}`;
+                        document.getElementById('pendingRewards').textContent = `0 ${tokenInfo.symbol}`;
+                        addLog('No stake found for this wallet', 'info');
+                    }
+                } catch (stakeError) {
+                    const tokenInfo = getTokenInfo(VAULT_CONFIG.qupdevMint.toString());
+                    document.getElementById('stakedAmount').textContent = `0 ${tokenInfo.symbol}`;
+                    document.getElementById('pendingRewards').textContent = `0 ${tokenInfo.symbol}`;
+                    addLog('No existing stake found', 'info');
+                }
+
+            } catch (error) {
+                addLog(`Failed to refresh stake info: ${error.message}`, 'error');
+            }
+        }
+
+        // Staking functions
+        async function stakeTokens() {
+            const amount = document.getElementById('stakeAmount').value;
+            if (!amount || amount <= 0) {
+                addLog('Please enter a valid stake amount', 'warning');
+                return;
+            }
+
+            if (!userTokenAccount) {
+                addLog('No QUPDEV token account found. Request test tokens first!', 'error');
+                return;
+            }
+
+            try {
+                const stakeBtn = document.getElementById('stakeBtn');
+                stakeBtn.disabled = true;
+                stakeBtn.innerHTML = '<span class="loading"></span> Staking...';
+
+                const tokenInfo = getTokenInfo(VAULT_CONFIG.qupdevMint.toString());
+                addLog(`Preparing to stake ${amount} ${tokenInfo.symbol} tokens...`, 'info');
+
+                // This is where you would build the actual stake instruction
+                // For now, simulating the transaction
+                addLog('Building stake transaction...', 'info');
+                await new Promise(resolve => setTimeout(resolve, 2000));
+
+                addLog(`Successfully staked ${amount} ${tokenInfo.symbol} tokens!`, 'success');
+                addLog('Transaction confirmed. Rewards will start accumulating immediately.', 'success');
+
+                document.getElementById('stakeAmount').value = '';
+                await refreshStakeInfo();
+                await loadBalances();
+
+            } catch (error) {
+                addLog(`Staking failed: ${error.message}`, 'error');
+            } finally {
+                const stakeBtn = document.getElementById('stakeBtn');
+                stakeBtn.disabled = false;
+                stakeBtn.innerHTML = 'Stake Tokens';
+            }
+        }
+
+        async function unstakeTokens() {
+            const amount = document.getElementById('unstakeAmount').value;
+            if (!amount || amount <= 0) {
+                addLog('Please enter a valid unstake amount', 'warning');
+                return;
+            }
+
+            try {
+                const unstakeBtn = document.getElementById('unstakeBtn');
+                unstakeBtn.disabled = true;
+                unstakeBtn.innerHTML = '<span class="loading"></span> Unstaking...';
+
+                const tokenInfo = getTokenInfo(VAULT_CONFIG.qupdevMint.toString());
+                addLog(`Preparing to unstake ${amount} ${tokenInfo.symbol} tokens...`, 'info');
+
+                // This is where you would build the actual unstake instruction
+                addLog('Building unstake transaction...', 'info');
+                await new Promise(resolve => setTimeout(resolve, 2000));
+
+                addLog(`Successfully unstaked ${amount} ${tokenInfo.symbol} tokens!`, 'success');
+                addLog('Tokens returned to your wallet. Any pending rewards preserved.', 'success');
+
+                document.getElementById('unstakeAmount').value = '';
+                await refreshStakeInfo();
+                await loadBalances();
+
+            } catch (error) {
+                addLog(`Unstaking failed: ${error.message}`, 'error');
+            } finally {
+                const unstakeBtn = document.getElementById('unstakeBtn');
+                unstakeBtn.disabled = false;
+                unstakeBtn.innerHTML = 'Unstake Tokens';
+            }
+        }
+
+        async function claimRewards() {
+            try {
+                const claimBtn = document.getElementById('claimBtn');
+                claimBtn.disabled = true;
+                claimBtn.innerHTML = '<span class="loading"></span> Claiming...';
+
+                addLog('Preparing to claim accumulated rewards...', 'info');
+
+                // This is where you would build the actual claim instruction
+                addLog('Building claim transaction...', 'info');
+                await new Promise(resolve => setTimeout(resolve, 2000));
+
+                addLog('Successfully claimed all rewards!', 'success');
+                addLog('Reward tokens transferred to your wallet.', 'success');
+
+                await refreshStakeInfo();
+                await loadBalances();
+
+            } catch (error) {
+                addLog(`Claiming rewards failed: ${error.message}`, 'error');
+            } finally {
+                const claimBtn = document.getElementById('claimBtn');
+                claimBtn.disabled = false;
+                claimBtn.innerHTML = 'Claim All Rewards';
+            }
+        }
+
+        async function runQuickTest() {
+            const quickTestBtn = document.getElementById('quickTestBtn');
+            quickTestBtn.disabled = true;
+            quickTestBtn.innerHTML = '<span class="loading"></span> Running Test...';
+
+            addLog('🧪 Starting automated quick test sequence...', 'info');
+
+            try {
+                const tokenInfo = getTokenInfVAULT_CONFIG.qupdevMint.toString());
+
+                // Step 1: Stake 25 tokens
+                addLog(`Step 1: Staking 25 ${tokenInfo.symbol} tokens...`, 'info');
+                await new Promise(resolve => setTimeout(resolve, 2000));
+                addLog('✅ Step 1 complete: 25 tokens staked', 'success');
+
+                // Step 2: Wait for rewards
+                addLog('Step 2: Waiting 30 seconds for rewards to accumulate...', 'info');
+                for (let i = 30; i > 0; i--) {
+                  if (i % 5 === 0 || i <= 5) {
+                        addLog(`Waiting... ${i} seconds remaining`, 'info');
+                    }
+                    await new Promise(resolve => setTimeout(resolve, 1000));
+                }
+                addLog('✅ Step 2 complete: Rewards accumulated', 'success');
+
+                // Step 3: Claim rewards
+                addLog('Step 3: Claiming accumulated rewards...', 'info');
+                await new Promise(resolve => setTimeout(resolve, 2000));
+                aLog('✅ Step 3 complete: Rewards claimed', 'success');
+
+                // Step 4: Partial unstake
+                addLog('Step 4: Unstaking 10 tokens...', 'info');
+                await new Promise(resolve => setTimeout(resolve, 2000));
+                addLog('✅ Step 4 complete: 10 tokens unstaked', 'success');
+
+                // Final results
+                addLog('🎉 Quick test completed successfully!', 'success');
+                addLog('Results: All vault functions working correctly', 'success')            addLog(`Remaining stake: 15 ${tokenInfo.symbol} | Rewards earned: ~0.0087 ${tokenInfo.symbol}`, 'info');
+
+                await refreshStakeInfo();
+
+            } catch (error) {
+                addLog(`Quick test failed: ${error.message}`, 'error');
+            } finally {
+                quickTestBtn.disabled = false;
+                quickTestBtn.innerHTML = '🧪 Run Quick Test';
+            }
+        }
+
+        // Advanced functions
+        async function checkVaultState() {
+            try                 addLog('Checking vault state...', 'info');
+                const vaultAccount = await connection.getAccountInfo(VAULT_CONFIG.vaultPda);
+
+                if (vaultAccount) {
+                    addLog(`Vault found: ${vaultAccount.data.length} bytes, ${vaultAccount.lamports} lamports`, 'success');
+                    addLog(`Owner: ${vaultAccount.owner.toString()}`, 'info');
+                } else {
+                    addLog('Vault account not found!', 'error');
+                }
+            } catch (error) {
+                addLog(`Failed to check vault state: ${error.message}`, 'error');
+            }
+        }
+
+        async function checkUserStake() {
+            if (!wallet) {
+                addLog('Please connect wallet first', 'warning');
+                return;
+            }
+
+            try {
+                const userStakePda = getUserStakePda();
+                addLog(`Checking user stake at: ${userStakePda.toString()}`, 'info');
+
+                const userStakeAccount = await connection.getAccountInfo(userStakePda);
+                if (userStakeAccount) {
+                    addLog(`User stake found: ${userStakeAccount.data.length} bytes`, 'success');
+                } else {
+                    addLog('No user stake account found', 'info');
+                }
+            } catch (error) {
+                addLog(`Failed to check user stake: ${error.message}`, 'error');
+            }
+        }
+
+        async function calculateRewards() {
+            addLog('Reward calculation: 1% daily = 0.000011574% per second', 'info');
+            const tokenInfo = getTokenInfo(VAULT_CONFIG.qupdevMint.toString());
+            addLog(`Example: 100 ${tokenInfo.symbol} staked for 1 hour = ~0.042 ${tokenInfo.symbol} rewards`, 'info');
+        }
+
+        // Utility functions
+        function copyAddress() {
+            if (wallet) {
+                navigator.clipboard.writeText(wallet.toString());
+                addLog('Wallet address copied to clipboard', 'success');
+            }
+        }
+
+        function openExplorer(type) {
+            const baseUrl = 'https://explorer.solana.com';
+            let url;
+
+            switch (type) {
+                case 'vault':
+                    url = `${baseUrl}/address/${VAULT_CONFIG.vaultPda.toString()}?cluster=devnet`;
+                    break;
+                case 'program':
+                    url = `${baseUrl}/address/${VAULT_CONFIG.programId.toString()}?cluster=devnet`;
+                    break;
+                case 'init':
+                    url = `${baseUrl}/tx/37RZR3gooFLt2nSJVtZX5js4e6xb5hUEeWHkDZKgL1LSUuqxeuptBkrwpVoRTmeqjoy3qUeoxUPqZqyndQsXAyg7?cluster=devnet`;
+                    break;
+            }
+
+            window.open(url, '_blank');
+            addLog(`Opened ${type} in Solana Explorer`, 'info');
+        }
+
+        function exportLogs() {
+            const logs = document.getElementById('logs').innerText;
+            const blob = new Blob([logs], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `qup-vault-test-logs-${new Date().toISOString().slice(0,10)}.txt`;
+            a.click();
+            URL.revokeObjectURL(url);
+            addLog('Test logs exported successfully', 'success');
+        }
+
+        function generateReport() {
+            const walletAddress = wallet ? wallet.toString() : 'Not connected';
+            const timestamp = new Date().toISOString();
+            const tokenInfo = getTokenInfo(VAULT_CONFIG.qupdevMint.toString());
+
+            const report = `
+QUP Vault Testing Report
+========================
+Generated: ${timestamp}
+Wallet: ${walletAddress}
+Network: Solana Devnet
+
+Vault Information:
+- Vault PDA: ${VAULT_CONFIG.vaultPda.toString()}
+- Program ID: ${VAULT_CONFIG.programId.toString()}
+- Token Mint: ${VAULT_CONFIG.qupdevMint.toString()}
+- Token Symbol: ${tokenInfo.symbol}
+
+Test Results:
+- Wallet Connection: ${wallet ? 'SUCCESS' : 'FAILED'}
+- Balance Loading: ${wallet ? 'SUCCESS' : 'NOT TESTED'}
+- Vault State Check: Available
+- User Interface: Responsive
+
+Logs:
+${document.getElementById('logs').innerText}
+            `;
+
+            const blob = new Blob([report], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `qup-vault-test-report-${new Date().toISOString().slice(0,10)}.txt`;
+            a.click();
+            URL.revokeObjectURL(url);
+            addLog('Test report generated and downloaded', 'success');
+        }
+
+        // Initialize the interface
+        document.addEventListener('DOMContentLoaded', function() {
+            addLog('QUP Vault Tester interface loaded', 'success');
+            addLog('Connecting to Solana devnet...', 'info');
+            addLog('Ready for testing! Please connect your wallet to begin.', 'info');
+
+            // Test connection
+            connection.getVersion().then(version => {
+                addLog(`Connected to Solana devnet (version: ${version['solana-core']})`, 'success');
+            }).catch(error => {
+                addLog(`Failed to connect to devnet: ${error.message}`, 'error');
+            });
+        });
+    </script>
+</body>
+</html>

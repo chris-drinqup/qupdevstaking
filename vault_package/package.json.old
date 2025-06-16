@@ -1,0 +1,12 @@
+{
+  "name": "vault-initialize",
+  "version": "1.0.0",
+  "description": "Initialize QUP LP Staking Vault",
+  "main": "anchor_init.js",
+  "dependencies": {
+    "@coral-xyz/anchor": "0.30.1",
+    "@solana/spl-token": "0.4.13",
+    "@solana/web3.js": "1.95.5",
+    "bn.js": "5.2.1"
+  }
+}

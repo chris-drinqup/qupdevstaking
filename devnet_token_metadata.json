@@ -1,0 +1,13 @@
+{
+  "name": "QUP Development Token",
+  "symbol": "QUPDEV", 
+  "description": "Development token for QUP staking platform testing",
+  "image": "https://drinqup.com/qupdev-logo.png",
+  "external_url": "https://drinqup.com",
+  "attributes": [
+    {
+      "trait_type": "Network",
+      "value": "Devnet"
+    }
+  ]
+}

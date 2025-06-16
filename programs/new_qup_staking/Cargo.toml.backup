@@ -1,0 +1,13 @@
+[package]
+name = "new_qup_staking"
+version = "0.1.0"
+description = "New QUP LP Staking Vault"
+edition = "2021"
+
+[lib]
+crate-type = ["cdylib", "lib"]
+name = "new_qup_staking"
+
+[dependencies]
+anchor-lang = "=0.30.1"
+anchor-spl = "=0.30.1"

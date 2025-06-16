@@ -1,0 +1,14 @@
+WARNING: `@coral-xyz/anchor` version(^0.31.1) and the current CLI version(0.30.1) don't match.
+
+	This can lead to unwanted behavior. To fix, upgrade the package by running:
+
+	yarn upgrade @coral-xyz/anchor@0.30.1
+
+error: Found argument '--overflow-checks' which wasn't expected, or isn't valid in this context
+
+	If you tried to supply `--overflow-checks` as a value rather than a flag, use `-- --overflow-checks`
+
+USAGE:
+    cargo-build-sbf --verbose
+
+For more information try --help

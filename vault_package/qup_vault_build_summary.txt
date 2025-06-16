@@ -1,0 +1,39 @@
+QUP_LP_Staking_Vault Build and Initialize Summary
+Generated on: Mon May 19 23:33:02 UTC 2025
+----------------------------------------
+[2025-05-19 23:33:02] Project directory /app/new_qup_staking exists. Using existing project...
+[2025-05-19 23:33:02] Validating project structure in /app/new_qup_staking...
+[2025-05-19 23:33:02] Program ID: 3kpu2wQdSLzpHAF5GL53oDKxJznbt6gJBoBvmMNrKwZj
+[2025-05-19 23:33:02] Updating program ID to 3kpu2wQdSLzpHAF5GL53oDKxJznbt6gJBoBvmMNrKwZj in project files...
+[2025-05-19 23:33:02] Validating program ID in lib.rs and Anchor.toml in /app/new_qup_staking...
+[2025-05-19 23:33:02] Verifying solana-program version in /app/new_qup_staking/programs/new_qup_staking/Cargo.toml...
+[2025-05-19 23:33:02] Current solana-program version: 1.18.25
+[2025-05-19 23:33:02] New solana-program version: 1.18.25
+[2025-05-19 23:33:02] Updating anchor-lang, anchor-spl, spl-token, and spl-associated-token-account versions in /app/new_qup_staking/programs/new_qup_staking/Cargo.toml...
+[2025-05-19 23:33:02] Updating root Cargo.toml...
+[2025-05-19 23:33:02] Contents of root Cargo.toml:
+[workspace]
+members = ["programs/new_qup_staking"]
+resolver = "2"
+
+[profile.release]
+overflow-checks = true
+lto = "fat"
+codegen-units = 1
+[2025-05-19 23:33:02] Ensuring correct @coral-xyz/anchor version for CLI...
+
+added 82 packages, and audited 83 packages in 3s
+
+11 packages are looking for funding
+  run `npm fund` for details
+
+4 high severity vulnerabilities
+
+To address all issues (including breaking changes), run:
+  npm audit fix --force
+
+Run `npm audit` for details.
+[2025-05-19 23:33:05] Attempting to build the program...
+[2025-05-19 23:33:05] Generating lockfile with Rust nightly...
+[2025-05-19 23:33:07] Forcing dependency resolution with cargo update...
+[2025-05-19 23:33:09] Building with anchor...

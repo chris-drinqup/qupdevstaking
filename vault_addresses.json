@@ -1,0 +1,11 @@
+{
+  "programId": "69GqjmqyXcL593ByVF4YqrFzBxHX5DsVcSRsAk49pPq7",
+  "authority": "CkgQNoxxSdKGvAqzJLZxF1ynKUhDWCDGMmA6jaEi2SjA",
+  "qupdevMint": "8bjKA2mkXMdkUHC6m8TfyQcksTDLKeP61XmFFcVViYef",
+  "vaultPda": "FGCLTzWpKHmPLcak8HcqP7j7wz7jjLTWzZ1SwKNFfzuz",
+  "tokenVaultPda": "HCw3qKrvemEwYzAzozqtwBtdapsWe7GfeCKjrUUPNSQf",
+  "vaultBump": 254,
+  "tokenVaultBump": 253,
+  "status": "initialized",
+  "initializationTx": "37RZR3gooFLt2nSJVtZX5js4e6xb5hUEeWHkDZKgL1LSUuqxeuptBkrwpVoRTmeqjoy3qUeoxUPqZqyndQsXAyg7"
+}

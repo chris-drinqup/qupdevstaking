@@ -1,0 +1,11 @@
+{
+  "name": "qup-staking-vault-devnet-test",
+  "version": "1.0.0",
+  "description": "QUP Token Staking Vault Devnet Test",
+  "dependencies": {
+    "@coral-xyz/anchor": "0.31.1",
+    "@solana/web3.js": "1.95.3",
+    "@solana/spl-token": "0.4.8",
+    "bn.js": "5.2.1"
+  }
+}

@@ -1,0 +1,128 @@
+use anchor_lang::prelude::*;
+use anchor_spl::token::{Mint, Token, TokenAccount, Transfer};
+
+declare_id!("3kpu2wQdSLzpHAF5GL53oDKxJznbt6gJBoBvmMNrKwZj");
+
+#[program]
+pub mod new_qup_staking {
+    use super::*;
+
+    pub fn initialize_vault(ctx: Context<InitializeVault>, bump: u8, duration: u64) -> Result<()> {
+        let vault = &mut ctx.accounts.vault;
+        vault.authority = ctx.accounts.authority.key();
+        vault.lp_token_mint = ctx.accounts.lp_token_mint.key();
+        vault.reward_mint = ctx.accounts.reward_mint.key();
+        vault.staking_vault = ctx.accounts.staking_vault.key();
+        vault.reward_vault = ctx.accounts.reward_vault.key();
+        vault.duration = duration;
+        vault.bump = bump;
+        vault.total_staked = 0;
+        vault.reward_rate = 100; // 1% per duration period
+        
+        msg!("🎉 DEVNET TEST: Vault initialized with duration: {} seconds", duration);
+        msg!("Vault PDA: {}", vault.key());
+        Ok(())
+    }
+
+    pub fn stake(ctx: Context<Stake>, amount: u64) -> Result<()> {
+        let vault = &mut ctx.accounts.vault;
+        let user_stake_info = &mut ctx.accounts.user_stake_info;
+        let clock = Clock::get()?;
+
+        // Transfer tokens from user to staking vault
+        let cpi_accounts = Transfer {
+            from: ctx.accounts.user_token_account.to_account_info(),
+            to: ctx.accounts.staking_vault.to_account_info(),
+            authority: ctx.accounts.user.to_account_info(),
+        };
+        let cpi_program = ctx.accounts.token_program.to_account_info();
+        let cpi_ctx = CpiContext::new(cpi_program, cpi_accounts);
+        anchor_spl::token::transfer(cpi_ctx, amount)?;
+
+        // Update user stake info
+        user_stake_info.user = ctx.accounts.user.key();
+        user_stake_info.vault = vault.key();
+        user_stake_info.amount_staked += amount;
+        user_stake_info.stake_timestamp = clock.unix_timestamp;
+        user_stake_info.last_reward_claim = clock.unix_timestamp;
+
+        // Update vault totals
+        vault.total_staked += amount;
+
+        msg!("🚀 DEVNET TEST: User {} staked {} tokens", ctx.accounts.user.key(), amount);
+        msg!("Total vault stake: {}", vault.total_staked);
+        Ok(())
+    }
+}
+
+#[derive(Accounts)]
+#[instruction(bump: u8)]
+pub struct InitializeVault<'info> {
+    #[account(mut)]
+    pub authority: Signer<'info>,
+    #[account(
+        init,
+        payer = authority,
+        space = 8 + 32 + 32 + 32 + 32 + 32 + 8 + 1 + 8 + 4,
+        seeds = [b"vault", lp_token_mint.key().as_ref()],
+        bump
+    )]
+    pub vault: Account<'info, Vault>,
+    pub lp_token_mint: Account<'info, Mint>,
+    pub reward_mint: Account<'info, Mint>,
+    #[account(mut)]
+    pub staking_vault: Account<'info, TokenAccount>,
+    #[account(mut)]
+    pub reward_vault: Account<'info, TokenAccount>,
+    /// CHECK: This is the vault authority PDA
+    #[account(seeds = [b"vault", lp_token_mint.key().as_ref()], bump)]
+    pub vault_authority: AccountInfo<'info>,
+    pub system_program: Program<'info, System>,
+    pub token_program: Program<'info, Token>,
+    pub rent: Sysvar<'info, Rent>,
+}
+
+#[derive(Accounts)]
+pub struct Stake<'info> {
+    #[account(mut)]
+    pub user: Signer<'info>,
+    #[account(mut, has_one = staking_vault)]
+    pub vault: Account<'info, Vault>,
+    #[account(
+        init_if_needed,
+        payer = user,
+        space = 8 + 32 + 32 + 8 + 8 + 8,
+        seeds = [b"user_stake", vault.key().as_ref(), user.key().as_ref()],
+        bump
+    )]
+    pub user_stake_info: Account<'info, UserStakeInfo>,
+    #[account(mut)]
+    pub user_token_account: Account<'info, TokenAccount>,
+    #[account(mut)]
+    pub staking_vault: Account<'info, TokenAccount>,
+    pub system_program: Program<'info, System>,
+    pub token_program: Program<'info, Token>,
+    pub rent: Sysvar<'info, Rent>,
+}
+
+#[account]
+pub struct Vault {
+    pub authority: Pubkey,
+    pub lp_token_mint: Pubkey,
+    pub reward_mint: Pubkey,
+    pub staking_vault: Pubkey,
+    pub reward_vault: Pubkey,
+    pub duration: u64,
+    pub bump: u8,
+    pub total_staked: u64,
+    pub reward_rate: u32,
+}
+
+#[account]
+pub struct UserStakeInfo {
+    pub user: Pubkey,
+    pub vault: Pubkey,
+    pub amount_staked: u64,
+    pub stake_timestamp: i64,
+    pub last_reward_claim: i64,
+}

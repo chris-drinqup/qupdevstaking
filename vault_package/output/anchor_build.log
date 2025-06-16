@@ -1,0 +1,15 @@
+    Updating crates.io index
+From https://github.com/rust-lang/crates.io-index
+ * [new ref]                          -> origin/HEAD
+error: failed to select a version for `solana-address-lookup-table-interface`.
+    ... required by package `solana-program v2.2.1`
+    ... which satisfies dependency `solana-program = "^2"` (locked to 2.2.1) of package `anchor-lang v0.31.1`
+    ... which satisfies dependency `anchor-lang = "^0.31.1"` (locked to 0.31.1) of package `anchor-spl v0.31.1`
+    ... which satisfies dependency `anchor-spl = "^0.31.1"` (locked to 0.31.1) of package `new_qup_staking v0.1.0 (/home/chris/krakenbot/pro/questakingpool/new_qup_staking/programs/new_qup_staking)`
+versions that meet the requirements `^2.2.2` (locked to 2.2.2) are: 2.2.2
+
+the package `solana-program` depends on `solana-address-lookup-table-interface`, with features: `solana-instruction` but `solana-address-lookup-table-interface` does not have these features.
+ It has an optional dependency with that name, but that dependency uses the "dep:" syntax in the features table, so it does not have an implicit feature with that name.
+
+
+failed to select a version for `solana-address-lookup-table-interface` which could resolve this conflict

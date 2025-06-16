@@ -1,0 +1,240 @@
+#!/bin/bash
+
+# QUP Vault Test Token Batch Distribution Script
+# Usage: ./distribute_tokens.sh ADDRESS1 ADDRESS2 ADDRESS3 ...
+# Or:    ./distribute_tokens.sh ADDRESS1
+# Or:    ./distribute_tokens.sh  (interactive mode)
+
+set -e  # Exit on any error
+
+echo "🎯 QUP Vault Test Token Distribution"
+echo "===================================="
+
+# Check if we're on devnet
+CURRENT_CLUSTER=$(solana config get | grep "RPC URL" | awk '{print $3}')
+if [[ "$CURRENT_CLUSTER" != "https://api.devnet.solana.com" ]]; then
+    echo "❌ ERROR: Not on devnet! Current cluster: $CURRENT_CLUSTER"
+    echo "Run: solana config set --url devnet"
+    exit 1
+fi
+
+echo "✅ Confirmed on devnet"
+
+# Function to validate wallet address
+validate_address() {
+    local address=$1
+    if [[ ${#address} -ne 44 ]]; then
+        echo "❌ Invalid wallet address: $address (should be 44 characters)"
+        return 1
+    fi
+    if [[ ! "$address" =~ ^[A-Za-z0-9]+$ ]]; then
+        echo "❌ Invalid wallet address format: $address"
+        return 1
+    fi
+    return 0
+}
+
+# Function to send tokens to one address
+send_tokens() {
+    local address=$1
+    local user_num=$2
+    local total_users=$3
+    
+    echo ""
+    echo "👤 User $user_num/$total_users: ${address:0:8}...${address: -8}"
+    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+    
+    # Send devnet SOL first (required for wallet funding)
+    echo "💎 Sending 0.1 devnet SOL..."
+    if solana transfer $address 0.1 --allow-unfunded-recipient >/dev/null 2>&1; then
+        echo "✅ Devnet SOL sent!"
+    else
+        echo "❌ Failed to send SOL to $address"
+        return 1
+    fi
+    
+    # Create token account (if needed)
+    echo "🔧 Creating token account..."
+    if spl-token create-account 8bjKA2mkXMdkUHC6m8TfyQcksTDLKeP61XmFFcVViYef --owner $address --fee-payer $(solana address) >/dev/null 2>&1; then
+        echo "✅ Token account created!"
+    else
+        echo "ℹ️  Token account already exists (or created by SOL transfer)"
+    fi
+    
+    # Send QUPDEV tokens
+    echo "🪙 Sending 1000 QUPDEV tokens..."
+    if spl-token transfer 8bjKA2mkXMdkUHC6m8TfyQcksTDLKeP61XmFFcVViYef 1000 $address --allow-unfunded-recipient >/dev/null 2>&1; then
+        echo "✅ QUPDEV tokens sent!"
+    else
+        echo "❌ Failed to send QUPDEV tokens to $address"
+        return 1
+    fi
+    
+    # Log the distribution
+    echo "$(date): SUCCESS - 1000 QUPDEV + 0.1 SOL → $address" >> token_distribution.log
+    
+    echo "✅ Complete! User can now test at: https://chris-drinqup.github.io/qupdevstaking"
+    
+    # Add a small delay between sends to avoid rate limiting
+    if [[ $user_num -lt $total_users ]]; then
+        sleep 2
+    fi
+}
+
+# Check our balances first
+echo ""
+echo "📊 Checking your balances..."
+QUPDEV_BALANCE=$(spl-token balance 8bjKA2mkXMdkUHC6m8TfyQcksTDLKeP61XmFFcVViYef 2>/dev/null || echo "0")
+SOL_BALANCE=$(solana balance | awk '{print $1}')
+
+echo "💰 Your QUPDEV balance: $QUPDEV_BALANCE tokens"
+echo "💎 Your SOL balance: $SOL_BALANCE SOL"
+
+# Get wallet addresses
+if [[ $# -eq 0 ]]; then
+    # Interactive mode - no arguments provided
+    echo ""
+    echo "📝 Interactive mode - Enter wallet addresses (one per line, empty line to finish):"
+    ADDRESSES=()
+    while true; do
+        read -p "Wallet address ${#ADDRESSES[@]}: " address
+        if [[ -z "$address" ]]; then
+            break
+        fi
+        if validate_address "$address"; then
+            ADDRESSES+=("$address")
+            echo "✅ Added: ${address:0:8}...${address: -8}"
+        fi
+    done
+else
+    # Command line arguments provided
+    ADDRESSES=("$@")
+    echo ""
+    echo "📝 Processing ${#ADDRESSES[@]} addresses from command line..."
+fi
+
+# Validate all addresses first
+echo ""
+echo "🔍 Validating addresses..."
+VALID_ADDRESSES=()
+for address in "${ADDRESSES[@]}"; do
+    if validate_address "$address"; then
+        VALID_ADDRESSES+=("$address")
+        echo "✅ Valid: ${address:0:8}...${address: -8}"
+    else
+        echo "⚠️  Skipping invalid address: $address"
+    fi
+done
+
+if [[ ${#VALID_ADDRESSES[@]} -eq 0 ]]; then
+    echo "❌ No valid addresses to process!"
+    echo ""
+    echo "Usage examples:"
+    echo "  ./distribute_tokens.sh 9WzDXwBbmkg8ZTbNMqUxvQRAyrZzDsGYdLVL9zYtAWWM"
+    echo "  ./distribute_tokens.sh ADDR1 ADDR2 ADDR3"
+    echo "  ./distribute_tokens.sh  (interactive mode)"
+    exit 1
+fi
+
+# Check if we have enough tokens
+TOTAL_TOKENS_NEEDED=$((${#VALID_ADDRESSES[@]} * 1000))
+TOTAL_SOL_NEEDED=$(echo "${#VALID_ADDRESSES[@]} * 0.1" | bc)
+
+echo ""
+echo "📋 Distribution Summary:"
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+echo "👥 Valid addresses: ${#VALID_ADDRESSES[@]}"
+echo "🪙 QUPDEV needed: $TOTAL_TOKENS_NEEDED tokens"
+echo "💎 SOL needed: $TOTAL_SOL_NEEDED SOL"
+echo "💰 QUPDEV available: $QUPDEV_BALANCE tokens"
+echo "💎 SOL available: $SOL_BALANCE SOL"
+
+# Check if we have enough balance
+if (( $(echo "$QUPDEV_BALANCE < $TOTAL_TOKENS_NEEDED" | bc -l) )); then
+    echo ""
+    echo "⚠️  WARNING: Insufficient QUPDEV tokens!"
+    echo "Need: $TOTAL_TOKENS_NEEDED, Have: $QUPDEV_BALANCE"
+    echo "Mint more with: spl-token mint 8bjKA2mkXMdkUHC6m8TfyQcksTDLKeP61XmFFcVViYef $((TOTAL_TOKENS_NEEDED - QUPDEV_BALANCE + 10000))"
+    read -p "Continue anyway? (y/N): " confirm
+    if [[ ! "$confirm" =~ ^[Yy]$ ]]; then
+        exit 1
+    fi
+fi
+
+if (( $(echo "$SOL_BALANCE < $TOTAL_SOL_NEEDED" | bc -l) )); then
+    echo ""
+    echo "⚠️  WARNING: Insufficient SOL!"
+    echo "Need: $TOTAL_SOL_NEEDED, Have: $SOL_BALANCE"
+    echo "Get more with: solana airdrop 2"
+    read -p "Continue anyway? (y/N): " confirm
+    if [[ ! "$confirm" =~ ^[Yy]$ ]]; then
+        exit 1
+    fi
+fi
+
+# Confirm before sending
+echo ""
+read -p "🚀 Ready to send tokens to ${#VALID_ADDRESSES[@]} addresses? (y/N): " confirm
+if [[ ! "$confirm" =~ ^[Yy]$ ]]; then
+    echo "Cancelled."
+    exit 0
+fi
+
+echo ""
+echo "🚀 Starting distribution..."
+
+# Send tokens to each address
+SUCCESS_COUNT=0
+FAILED_ADDRESSES=()
+
+for i in "${!VALID_ADDRESSES[@]}"; do
+    address="${VALID_ADDRESSES[$i]}"
+    user_num=$((i + 1))
+    total_users=${#VALID_ADDRESSES[@]}
+    
+    if send_tokens "$address" "$user_num" "$total_users"; then
+        ((SUCCESS_COUNT++))
+    else
+        FAILED_ADDRESSES+=("$address")
+        echo "$(date): FAILED - $address" >> token_distribution.log
+    fi
+done
+
+# Final summary
+echo ""
+echo "🎉 DISTRIBUTION COMPLETE!"
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+echo "✅ Successful: $SUCCESS_COUNT addresses"
+echo "❌ Failed: ${#FAILED_ADDRESSES[@]} addresses"
+
+if [[ ${#FAILED_ADDRESSES[@]} -gt 0 ]]; then
+    echo ""
+    echo "❌ Failed addresses:"
+    for failed_addr in "${FAILED_ADDRESSES[@]}"; do
+        echo "   $failed_addr"
+    done
+    echo ""
+    echo "💡 You can retry failed addresses with:"
+    echo "   ./distribute_tokens.sh ${FAILED_ADDRESSES[*]}"
+fi
+
+if [[ $SUCCESS_COUNT -gt 0 ]]; then
+    echo ""
+    echo "📱 Message template for your community:"
+    echo "════════════════════════════════════════════════════════════"
+    echo "✅ Test tokens sent to $SUCCESS_COUNT users!"
+    echo ""
+    echo "Next steps:"
+    echo "1. Visit: https://chris-drinqup.github.io/qupdevstaking"
+    echo "2. Connect your wallet (make sure you're on Devnet!)"
+    echo "3. You should see 1000 QUPDEV tokens"
+    echo "4. Start testing and share your results!"
+    echo ""
+    echo "🎁 Complete testing to earn real QUP rewards!"
+    echo "💬 Questions? Ask in the chat! 🚀"
+    echo "════════════════════════════════════════════════════════════"
+fi
+
+echo ""
+echo "📊 Distribution logged to: token_distribution.log"
+echo "🔍 Check vault activity: https://explorer.solana.com/address/FGCLTzWpKHmPLcak8HcqP7j7wz7jjLTWzZ1SwKNFfzuz?cluster=devnet"
