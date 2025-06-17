@@ -28,7 +28,7 @@ fi
 echo -e "${GREEN}✅ Confirmed on devnet${NC}"
 
 # Token constants
-QUPDEV_MINT="8bjKA2mkXMdkUHC6m8TfyQcksTDLKeP61XmFFcVViYef"
+QUPDEV_MINT="FtZqPtJ3R9kSMTh1pinqzoig3Wa8qbsH6AV6hbRtNxiY"
 SOL_AMOUNT="0.15"  # Increased from 0.1 for better safety margin
 TOKEN_AMOUNT="1000"
 VAULT_URL="https://chris-drinqup.github.io/qupdevstaking"
@@ -381,6 +381,6 @@ fi
 
 echo ""
 echo -e "${BLUE}📊 Distribution logged to: token_distribution.log${NC}"
-echo -e "${BLUE}🔍 Check vault activity: https://explorer.solana.com/address/FGCLTzWpKHmPLcak8HcqP7j7wz7jjLTWzZ1SwKNFfzuz?cluster=devnet${NC}"
+echo -e "${BLUE}🔍 Check vault activity: https://explorer.solana.com/address/8bjKA2mkXMdkUHC6m8TfyQcksTDLKeP61XmFFcVViYef?cluster=devnet${NC}"
 echo ""
 echo -e "${GREEN}🎯 Happy testing! 🚀${NC}"
