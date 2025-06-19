@@ -277,12 +277,12 @@
                     </div>
 
                     <button class="action-btn" id="executeStaking" style="background: #ff6b6b; font-size: 1.1rem; padding: 15px 30px;">
-                        Start Staking & Earning!
+                        🚀 Start Staking & Earning!
                     </button>
                 </div>
 
                 <div id="stakingSuccess" style="display: none; background: linear-gradient(45deg, #ff6b6b, #ee5a6f); color: white; padding: 20px; border-radius: 10px; text-align: center; margin: 20px 0;">
-                    <h3>SUCCESS: Your Tokens Are Now Earning!</h3>
+                    <h3>🎉 Your Tokens Are Now Earning!</h3>
                     <div style="background: rgba(255,255,255,0.1); padding: 15px; border-radius: 8px; margin: 15px 0;">
                         <h4>What happens next?</h4>
                         <p>✅ Your tokens are working 24/7 earning rewards automatically!</p>
@@ -292,8 +292,8 @@
                     </div>
 
                     <div style="margin: 20px 0;">
-                        <button class="action-btn" style="background: #ffc107; color: #333;">Claim My Rewards</button>
-                        <button class="action-btn" style="background: #ff9a56;">Unstake Everything</button>
+                        <button class="action-btn" style="background: #ffc107; color: #333;">🎁 Claim My Rewards</button>
+                        <button class="action-btn" style="background: #ff9a56;">🏦 Unstake Everything</button>
                     </div>
 
                     <p><strong>💡 Pro Tip:</strong> Bookmark this page and check back later to see your earnings grow!</p>
@@ -534,7 +534,7 @@
             if (wallet) {
                 const walletAddress = wallet.toString();
                 const subject = encodeURIComponent('QUP Devnet Test Tokens Request');
-                const body = encodeURIComponent('Hi Chris,\n\nPlease send test tokens to my devnet wallet:\n\n' + walletAddress + '\n\nThanks!');
+                const body =ncodeURIComponent('Hi Chris,\n\nPlease send test tokens to my devnet wallet:\n\n' + walletAddress + '\n\nThanks!');
 
                 const mailtoLink = 'mailto:chris@qupcorp.com?subject=' + subject + '&body=' + body;
                 window.open(mailtoLink);
@@ -695,18 +695,18 @@
 
         function executeStaking() {
             if (!wallet || !connection) {
-                addLog('ERROR: Wallet or connection not initialized!', 'error');
+                addLog('❌ Wallet or connection not initialized!', 'error');
                 alert('Please ensure your wallet is connected and try again.');
                 return;
             }
 
             if (stakingAmount <= 0 || selectedDuration <= 0) {
-                addLog('ERROR: Invalid staking parameters!', 'error');
+                addLog('❌ Invalid staking parameters!', 'error');
                 alert('Please set a valid amount and duration.');
                 return;
             }
 
-            addLog('STARTING: Real staking transaction on Solana devnet...', 'info');
+            addLog('🚀 ing REAL staking transaction on Solana devnet...', 'info');
             addLog('Amount: ' + stakingAmount + ' QUPDEV', 'info');
             addLog('Duration: ' + selectedDuration + ' days', 'info');
             addLog('APY: ' + selectedAPY + '%', 'info');
@@ -718,25 +718,25 @@
             // Real staking implementation
             executeRealStaking()
                 .then(function() {
-                    addLog('SUCCESS: Real staking transaction completed successfully!', 'success');
+                    addLog('✅ REAL staking transaction completed successfully!', 'success');
                     addLog('Your ' + stakingAmount + ' QUPDEV tokens are now earning ' + selectedAPY + '% APY on-chain!', 'success');
 
                     document.getElementById('stakingSuccess').style.display = 'block';
                     document.getElementById('stakingSuccess').scrollIntoView({ behavior: 'smooth' });
                 })
-                .catch(function(error) {
-                    addLog('ERROR: Staking transaction failed: ' + error.message, 'error');
+              .catch(function(error) {
+                    addLog('❌ Staking transaction failed: ' + error.message, 'error');
                     alert('Transaction failed: ' + error.message);
                 })
                 .finally(function() {
                     executeBtn.disabled = false;
-                    executeBtn.innerHTML = 'Start Staking & Earning!';
+                    executeBtn.innerHTML = '🚀 Start Staking & Earning!';
                 });
         }
 
         async function executeRealStaking() {
             try {
-                addLog('Building real staking transaction...', 'info');
+                addLog('Building real staking transon...', 'info');
 
                 // Calculate amount in smallest units (assuming 6 decimals like SOL)
                 const amountLamports = Math.floor(stakingAmount * 1e6);
@@ -756,7 +756,7 @@
                     keys: [
                         // 1. vault (mut) - FIRST
                         { pubkey: VAULT_CONFIG.vaultPda, isSigner: false, isWritable: true },
-                        // 2. user_stake (init_if_needed, mut) - SECOND
+                        // 2. user_stake (init_if_needed, mut) - SECOND  
                         { pubkey: userStakePda, isSigner: false, isWritable: true },
                         // 3. user (signer, mut) - THIRD
                         { pubkey: wallet, isSigner: true, isWritable: true },
@@ -776,13 +776,13 @@
 
                 // Create and send transaction with explicit compute budget
                 const transaction = new solanaWeb3.Transaction();
-
+                
                 // Add compute budget instruction first to control it explicitly
                 const computeBudgetInstruction = solanaWeb3.ComputeBudgetProgram.setComputeUnitLimit({
-                    units: 400000  // Increase compute units for the transaction
+                    units: 400000,  // Increase compute units for the transaction
                 });
                 transaction.add(computeBudgetInstruction);
-
+                
                 // Add our staking instruction
                 transaction.add(stakeInstruction);
                 const latestBlockhash = await connection.getLatestBlockhash('confirmed');
@@ -815,7 +815,7 @@
             } catch (error) {
                 // Better error handling - extract meaningful error information
                 let errorMessage = 'Unknown error';
-
+                
                 if (error && error.message) {
                     errorMessage = error.message;
                 } else if (error && error.toString) {
@@ -825,7 +825,7 @@
                 } else if (error) {
                     errorMessage = JSON.stringify(error);
                 }
-
+                
                 addLog('Error in executeRealStaking: ' + errorMessage, 'error');
 
                 // Provide helpful error messages
@@ -884,8 +884,8 @@
 
             // Clear any cached data from browser
             try {
-                if (typeof localStorage !== 'undefined') localStorage.clear();
-                if (typeof sessionStorage !== 'undefined') sessionStorage.clear();
+                localStorage.clear();
+                sessionStorage.clear();
             } catch (e) {
                 // Ignore if not available
             }

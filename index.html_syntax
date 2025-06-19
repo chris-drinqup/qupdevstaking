@@ -277,12 +277,12 @@
                     </div>
 
                     <button class="action-btn" id="executeStaking" style="background: #ff6b6b; font-size: 1.1rem; padding: 15px 30px;">
-                        Start Staking & Earning!
+                        🚀 Start Staking & Earning!
                     </button>
                 </div>
 
                 <div id="stakingSuccess" style="display: none; background: linear-gradient(45deg, #ff6b6b, #ee5a6f); color: white; padding: 20px; border-radius: 10px; text-align: center; margin: 20px 0;">
-                    <h3>SUCCESS: Your Tokens Are Now Earning!</h3>
+                    <h3>🎉 Your Tokens Are Now Earning!</h3>
                     <div style="background: rgba(255,255,255,0.1); padding: 15px; border-radius: 8px; margin: 15px 0;">
                         <h4>What happens next?</h4>
                         <p>✅ Your tokens are working 24/7 earning rewards automatically!</p>
@@ -292,8 +292,8 @@
                     </div>
 
                     <div style="margin: 20px 0;">
-                        <button class="action-btn" style="background: #ffc107; color: #333;">Claim My Rewards</button>
-                        <button class="action-btn" style="background: #ff9a56;">Unstake Everything</button>
+                        <button class="action-btn" style="background: #ffc107; color: #333;">🎁 Claim My Rewards</button>
+                        <button class="action-btn" style="background: #ff9a56;">🏦 Unstake Everything</button>
                     </div>
 
                     <p><strong>💡 Pro Tip:</strong> Bookmark this page and check back later to see your earnings grow!</p>
@@ -524,7 +524,7 @@
                 copyBtn.style.background = '#4CAF50';
 
                 setTimeout(function() {
-                    copyBtn.innerHTML = originalText;
+                  copyBtn.innerHTML = originalText;
                     copyBtn.style.background = '';
                 }, 2000);
             }
@@ -695,20 +695,20 @@
 
         function executeStaking() {
             if (!wallet || !connection) {
-                addLog('ERROR: Wallet or connection not initialized!', 'error');
-                alert('Please ensure your wallet is connected and try again.');
+                addLog('❌ Wallet or connection not initialized!', 'error');
+              alert('Please ensure your wallet is connected and try again.');
                 return;
             }
 
             if (stakingAmount <= 0 || selectedDuration <= 0) {
-                addLog('ERROR: Invalid staking parameters!', 'error');
+                addLog('❌ Invalid staking parameters!', 'error');
                 alert('Please set a valid amount and duration.');
                 return;
             }
 
-            addLog('STARTING: Real staking transaction on Solana devnet...', 'info');
+            addLog('🚀 Starting REAL staking transaction on Solana devnet...', 'info');
             addLog('Amount: ' + stakingAmount + ' QUPDEV', 'info');
-            addLog('Duration: ' + selectedDuration + ' days', 'info');
+        addLog('Duration: ' + selectedDuration + ' days', 'info');
             addLog('APY: ' + selectedAPY + '%', 'info');
 
             const executeBtn = document.getElementById('executeStaking');
@@ -718,19 +718,19 @@
             // Real staking implementation
             executeRealStaking()
                 .then(function() {
-                    addLog('SUCCESS: Real staking transaction completed successfully!', 'success');
+                    addLog('✅ REAL staking transaction completed successfuy!', 'success');
                     addLog('Your ' + stakingAmount + ' QUPDEV tokens are now earning ' + selectedAPY + '% APY on-chain!', 'success');
 
                     document.getElementById('stakingSuccess').style.display = 'block';
                     document.getElementById('stakingSuccess').scrollIntoView({ behavior: 'smooth' });
                 })
                 .catch(function(error) {
-                    addLog('ERROR: Staking transaction failed: ' + error.message, 'error');
-                    alert('Transaction failed: ' + error.message);
+                    addLog('❌ Staking transaction failed: ' + error.message, 'error');
+                    alt('Transaction failed: ' + error.message);
                 })
                 .finally(function() {
                     executeBtn.disabled = false;
-                    executeBtn.innerHTML = 'Start Staking & Earning!';
+                    executeBtn.innerHTML = '🚀 Start Staking & Earning!';
                 });
         }
 
@@ -739,7 +739,7 @@
                 addLog('Building real staking transaction...', 'info');
 
                 // Calculate amount in smallest units (assuming 6 decimals like SOL)
-                const amountLamports = Math.floor(stakingAmount * 1e6);
+                const amountLampor = Math.floor(stakingAmount * 1e6);
                 addLog('Amount in lamports: ' + amountLamports, 'info');
 
                 // Generate the user stake PDA

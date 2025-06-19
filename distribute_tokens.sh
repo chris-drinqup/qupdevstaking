@@ -28,7 +28,7 @@ fi
 echo -e "${GREEN}✅ Confirmed on devnet${NC}"
 
 # Token constants
-QUPDEV_MINT="FtZqPtJ3R9kSMTh1pinqzoig3Wa8qbsH6AV6hbRtNxiY"
+QUPDEV_MINT="8bjKA2mkXMdkUHC6m8TfyQcksTDLKeP61XmFFcVViYef"
 SOL_AMOUNT="0.15"  # Increased from 0.1 for better safety margin
 TOKEN_AMOUNT="1000"
 VAULT_URL="https://chris-drinqup.github.io/qupdevstaking"
